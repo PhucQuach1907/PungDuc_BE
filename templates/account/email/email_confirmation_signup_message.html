@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="vi">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>[PungDuc] Xác nhận email của bạn</title>
+</head>
+<body>
+<div class="wrapper" style="text-align: center;">
+    <table class="main" width="100%">
+        <tr>
+            <td style="padding: 20px">
+                <div>
+                    <h3>Xin chào {{ user.first_name }} {{ user.last_name }},</h3>
+                    <p>
+                        Bạn nhận được email này vì người dùng {{ user.first_name }} {{ user.last_name }} đã cung cấp địa
+                        chỉ email của bạn để đăng ký tài khoản trên PungDuc. Nhấp vào liên kết sau để xác nhận địa chỉ
+                        email của bạn:
+                    </p>
+                    <p>
+                        <a href="{{ activate_url }}">Email xác nhận</a>
+                    </p>
+                    <p>
+                        Cảm ơn bạn đã sử dụng PungDuc.
+                    </p>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

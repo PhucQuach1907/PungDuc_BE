@@ -1,0 +1,59 @@
+# Django #
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+*.sqlite3
+
+# Nếu bạn sử dụng môi trường ảo Virtualenv #
+venv/
+ENV/
+env/
+.venv/
+
+# Tệp môi trường #
+.env
+.env.*
+
+# Thư mục tĩnh #
+staticfiles/
+media/
+
+# Django migrations #
+**/migrations/*
+
+# VS Code settings #
+.vscode/
+
+# Các thư mục và tệp hệ thống #
+.DS_Store
+Thumbs.db
+
+# Byte-compiled / optimized / DLL files #
+*.py[cod]
+*$py.class
+
+# mypy #
+.mypy_cache/
+
+# Pyre type checker #
+.pyre/
+
+# Unit test / coverage reports #
+htmlcov/
+.tox/
+.nox/
+.coverage
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+.coverage.*
+.cache
+
+# Jupyter Notebook #
+.ipynb_checkpoints
+
+# PyCharm #
+.idea/

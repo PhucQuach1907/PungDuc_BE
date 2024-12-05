@@ -1,0 +1,7 @@
+{% load i18n %}{% autoescape off %}
+Xin chào {{ user.username }},
+Bạn nhận được email này vì người dùng {{ user.username }} đã cung cấp địa chỉ email của bạn để đăng ký tài khoản trên PungDuc.
+Nhấp vào liên kết sau để xác nhận địa chỉ email của bạn:
+[Email xác nhận: {{ activate_url }}]
+Cảm ơn bạn đã sử dụng PungDuc.
+{% endautoescape %}
