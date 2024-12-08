@@ -18,11 +18,14 @@ from allauth.account.views import ConfirmEmailView, EmailVerificationSentView
 from dj_rest_auth.views import PasswordResetConfirmView, UserDetailsView, PasswordChangeView
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework_simplejwt.views import TokenRefreshView
+
 from accounts.views import CustomRegisterView, CustomResetPasswordView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('dj_rest_auth.urls')),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/auth/registration/', CustomRegisterView.as_view(), name='registration'),
     path('api/auth/registration/account-confirm-email/<str:key>/', ConfirmEmailView.as_view()),
     path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
@@ -33,4 +36,5 @@ urlpatterns = [
     path('api/auth/password/change/', PasswordChangeView.as_view(), name='password_change'),
     path('api/auth/social/', include('accounts.urls')),
     path('api/users/', UserDetailsView.as_view(), name='user_details'),
+    path('api/tasks/', include('tasks.urls')),
 ]
