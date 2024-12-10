@@ -1,0 +1,19 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="{% static 'css/notifications/index.css' %}" rel="stylesheet"/>
+    <title>Công việc sắp tới hạn</title>
+</head>
+<body>
+    <div class="email-container">
+        <h2>Công việc sắp tới hạn</h2>
+        <p>Chào bạn,</p>
+
+        <p>Công việc <span class="highlight">{{ task.title }}</span> trong dự án <span class="highlight">{{ task.project.name }}</span> của bạn có hạn chót vào lúc <span class="highlight">{{ task.deadline }}</span>.</p>
+        <p>Vui lòng hoàn thành công việc trước hạn để tránh trễ hạn.</p>
+
+        <p class="email-footer">Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.</p>
+    </div>
+</body>
+</html>

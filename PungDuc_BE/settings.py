@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'rest_framework',
+    # auth
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
@@ -62,10 +63,14 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.github',
+    # apps
     'accounts',
+    'notifications',
     'tasks',
+    #
     'corsheaders',
-    'django_filters'
+    'django_filters',
+    'django_celery_beat',
 ]
 
 SITE_ID = 1
@@ -167,6 +172,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = env("EMAIL_HOST_USER")
 
 # Đăng nhập oauth2
 REST_USE_JWT = True
@@ -235,6 +241,25 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+CELERY_BROKER_URL = env("CACHE_URL")
+CELERY_ACCEPT_CONTENT = {'application/json'}
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Ho_Chi_Minh'
+CELERY_RESULT_BACKEND = env("CACHE_URL")
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+CELERY_BEAT_SCHEDULE = {
+    'send_deadline_notifications_every_hour': {
+        'task': 'notifications.tasks.send_deadline_notifications',
+        # 'schedule': timedelta(hours=1),
+        'schedule': timedelta(seconds=5),
+    },
+    'send_notifications_overdue_tasks': {
+        'task': 'notifications.tasks.send_notification_overdue_tasks',
+        'schedule': timedelta(seconds=5),
+    }
+}
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 

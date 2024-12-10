@@ -57,3 +57,6 @@ htmlcov/
 
 # PyCharm #
 .idea/
+
+# Celery #
+celerybeat-schedule.*
