@@ -9,6 +9,7 @@ from dj_rest_auth.views import PasswordResetView
 from rest_framework import status
 from rest_framework.response import Response
 
+from PungDuc_BE.settings import env
 from .serializers import CustomPasswordResetSerializer
 
 
@@ -51,11 +52,11 @@ class CustomResetPasswordView(PasswordResetView):
 
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
-    callback_url = "https://www.youtube.com/"
+    callback_url = env("CALL_BACK_URL")
     client_class = OAuth2Client
 
 
 class GithubLogin(SocialLoginView):
     adapter_class = GitHubOAuth2Adapter
-    callback_url = "https://www.youtube.com/"
+    callback_url = env("CALL_BACK_URL")
     client_class = OAuth2Client

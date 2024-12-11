@@ -40,6 +40,7 @@ CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://localhost:8081',
+    'http://localhost:5173',
 ]
 
 # Application definition
@@ -158,9 +159,9 @@ REST_SESSION_LOGIN = False
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
-ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = 'https://www.youtube.com/'
-LOGIN_URL = 'https://www.youtube.com/'
-LOGOUT_REDIRECT_URL = 'https://www.youtube.com'
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = env("LOGIN_URL")
+LOGIN_URL = env("LOGIN_URL")
+LOGOUT_REDIRECT_URL = env("LOGIN_URL")
 # EMAIL_CONFIRM_REDIRECT_BASE_URL = \
 #     "http://localhost:3000/email/confirm/"
 #
@@ -189,6 +190,7 @@ SOCIALACCOUNT_PROVIDERS = {
         'SCOPE': [
             'email',
             'profile',
+            'openid',
         ],
         'AUTH_PARAMS': {'access_type': 'online'},
         'VERIFY_EMAIL': True
@@ -206,7 +208,7 @@ SOCIALACCOUNT_PROVIDERS = {
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_LOGIN_ON_GET = True
 SOCIALACCOUNT_LOGOUT_ON_GET = True
-LOGIN_REDIRECT_URL = 'https://www.youtube.com/'
+LOGIN_REDIRECT_URL = env("CALL_BACK_URL")
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
