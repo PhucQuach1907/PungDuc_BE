@@ -13,6 +13,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 import environ
+from celery.schedules import crontab
 from django.contrib import staticfiles
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -67,6 +68,7 @@ INSTALLED_APPS = [
     'accounts',
     'notifications',
     'tasks',
+    'reports',
     #
     'corsheaders',
     'django_filters',
@@ -245,27 +247,34 @@ CELERY_BROKER_URL = env("CACHE_URL")
 CELERY_ACCEPT_CONTENT = {'application/json'}
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'Asia/Ho_Chi_Minh'
+CELERY_TIMEZONE = 'Asia/Bangkok'
 CELERY_RESULT_BACKEND = env("CACHE_URL")
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 CELERY_BEAT_SCHEDULE = {
     'send_deadline_notifications_every_hour': {
         'task': 'notifications.tasks.send_deadline_notifications',
-        # 'schedule': timedelta(hours=1),
-        'schedule': timedelta(seconds=5),
+        'schedule': timedelta(hours=1),
     },
     'send_notifications_overdue_tasks': {
         'task': 'notifications.tasks.send_notification_overdue_tasks',
-        'schedule': timedelta(seconds=5),
-    }
+        'schedule': timedelta(hours=1),
+    },
+    'create_weekly_report': {
+        'task': 'reports.tasks.create_weekly_report',
+        'schedule': crontab(minute='0', hour='0', day_of_week='1'),
+    },
+    'create_monthly_report': {
+        'task': 'reports.tasks.create_monthly_report',
+        'schedule': crontab(minute='0', hour='0', day_of_month='1'),
+    },
 }
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Asia/Ho_Chi_Minh'
+TIME_ZONE = 'Asia/Bangkok'
 
 USE_I18N = True
 

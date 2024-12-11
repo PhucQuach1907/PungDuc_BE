@@ -59,6 +59,7 @@ class Task(models.Model):
     deadline = models.DateTimeField()
     priority = models.IntegerField(choices=PRIORITY_CHOICES)
     status = models.IntegerField(choices=STATUS_CHOICES)
+    finish_at = models.DateTimeField(null=True, blank=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     column = models.ForeignKey(TableColumn, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)

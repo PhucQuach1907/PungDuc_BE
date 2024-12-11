@@ -37,4 +37,5 @@ urlpatterns = [
     path('api/auth/social/', include('accounts.urls')),
     path('api/users/', UserDetailsView.as_view(), name='user_details'),
     path('api/tasks/', include('tasks.urls')),
+    path('api/reports/', include('reports.urls')),
 ]
