@@ -75,6 +75,8 @@ def send_notification_overdue_tasks():
         message = EmailMessage(subject, html_message, from_email, recipient_list)
         message.content_subtype = 'html'
         message.send()
+        task.status = 3
+        task.save()
 
         def create_notification():
             Notification.objects.create(task=task, sent=True, type='overdue')

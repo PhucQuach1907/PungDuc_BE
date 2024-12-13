@@ -37,6 +37,14 @@ class GetTaskSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'content', 'deadline', 'priority', 'status', 'created_at', 'updated_at']
 
 
+class GetDetailTasksSerializer(serializers.ModelSerializer):
+    project = ProjectSerializer(read_only=True)
+
+    class Meta:
+        model = Task
+        fields = '__all__'
+
+
 class GetAllTaskSerializer(serializers.ModelSerializer):
     project = serializers.PrimaryKeyRelatedField(queryset=Project.objects.all())
     column = serializers.PrimaryKeyRelatedField(queryset=TableColumn.objects.all())

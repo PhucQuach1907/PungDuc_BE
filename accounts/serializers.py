@@ -17,10 +17,15 @@ from .models import CustomUser
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField()
+
     class Meta:
         model = CustomUser
-        fields = ('id', 'email', 'first_name', 'last_name')
+        fields = ('id', 'email', 'first_name', 'last_name', 'full_name')
         read_only_fields = ['id', 'email']
+
+    def get_full_name(self, obj):
+        return obj.__str__()
 
 
 class CustomLoginSerializer(LoginSerializer):
