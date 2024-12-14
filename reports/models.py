@@ -20,6 +20,7 @@ class Report(models.Model):
     total_tasks = models.IntegerField()
     completed_tasks = models.IntegerField()
     pending_tasks = models.IntegerField()
+    overdue_tasks = models.IntegerField()
     average_completion_time = models.DecimalField(max_digits=10, decimal_places=2)
     weekly_analysis = models.JSONField(null=True, blank=True)
     monthly_analysis = models.JSONField(null=True, blank=True)
