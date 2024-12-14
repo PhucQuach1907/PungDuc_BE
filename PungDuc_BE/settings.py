@@ -265,11 +265,13 @@ CELERY_BEAT_SCHEDULE = {
     },
     'create_weekly_report': {
         'task': 'reports.tasks.create_weekly_report',
-        'schedule': crontab(minute='0', hour='0', day_of_week='1'),
+        # 'schedule': crontab(minute='0', hour='0', day_of_week='1'),
+        'schedule': timedelta(seconds=10),
     },
     'create_monthly_report': {
         'task': 'reports.tasks.create_monthly_report',
-        'schedule': crontab(minute='0', hour='0', day_of_month='1'),
+        # 'schedule': crontab(minute='0', hour='0', day_of_month='1'),
+        'schedule': timedelta(seconds=10),
     },
 }
 # Internationalization

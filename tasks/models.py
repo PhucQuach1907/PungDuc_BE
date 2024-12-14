@@ -23,6 +23,7 @@ class TableColumn(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255, null=False, blank=False)
     order = models.IntegerField(null=False, blank=False)
+    is_done_column = models.BooleanField(default=False)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, editable=False, related_name='columns')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

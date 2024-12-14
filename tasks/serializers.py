@@ -34,7 +34,7 @@ class CreateUpdateDeleteTableColumnSerializer(serializers.ModelSerializer):
 class GetTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'title', 'content', 'deadline', 'priority', 'status', 'created_at', 'updated_at']
+        fields = ['id', 'title', 'content', 'deadline', 'priority', 'status', 'finish_at', 'created_at', 'updated_at']
 
 
 class GetDetailTasksSerializer(serializers.ModelSerializer):

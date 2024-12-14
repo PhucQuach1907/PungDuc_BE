@@ -426,9 +426,12 @@ class TasksByMonthView(APIView):
             start_of_day = current_date.replace(hour=0, minute=0, second=0, microsecond=0)
             end_of_day = current_date.replace(hour=23, minute=59, second=59, microsecond=999999)
 
-            doing_count = Task.objects.filter(deadline__gte=start_of_day, status=1, project__user=self.request.user, created_at__lte=end_of_day).count()
-            on_deadline_count = Task.objects.filter(deadline__range=[start_of_day, end_of_day], project__user=self.request.user).count()
-            overdue_count = Task.objects.filter(deadline__lt=start_of_day, status=3, project__user=self.request.user).count()
+            doing_count = Task.objects.filter(deadline__gte=start_of_day, status=1, project__user=self.request.user,
+                                              created_at__lte=end_of_day).count()
+            on_deadline_count = Task.objects.filter(deadline__range=[start_of_day, end_of_day],
+                                                    project__user=self.request.user).count()
+            overdue_count = Task.objects.filter(deadline__lt=start_of_day, status=3,
+                                                project__user=self.request.user).count()
 
             tasks_by_day[current_date.strftime('%Y-%m-%d')] = {
                 'doing': doing_count,
@@ -495,6 +498,21 @@ class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
+
+        column_id = request.data.get("column")
+        if column_id:
+            try:
+                column = TableColumn.objects.get(id=column_id)
+
+                if column.is_done_column:
+                    instance.status = Task.DONE
+                    instance.finished_at = timezone.make_aware(instance.finished_at, timezone.get_default_timezone())
+                else:
+                    instance.status = Task.DOING
+                    instance.finished_at = None
+            except TableColumn.DoesNotExist:
+                return APIResponse({'error': 'COLUMN_NOT_FOUND'}, status_code=HTTPStatus.NOT_FOUND)
+
         self.perform_update(serializer)
 
         if getattr(instance, '_prefetched_objects_cache', None):
