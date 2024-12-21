@@ -1,7 +1,8 @@
 from datetime import timedelta
 
 from celery import shared_task
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, send_mail, EmailMultiAlternatives
+from django.utils.html import strip_tags
 from django.db import transaction
 from django.template.loader import render_to_string
 from django.utils.timezone import now
@@ -27,9 +28,11 @@ def send_deadline_notifications():
                 'notifications/deadline_notification.html',
                 {'task': task}
             )
+            plain_message = strip_tags(html_message)
             recipient_list = [task.project.user.email]
             from_email = settings.DEFAULT_FROM_EMAIL
-            message = EmailMessage(subject, html_message, from_email, recipient_list)
+            message = EmailMultiAlternatives(subject=subject, body=plain_message, from_email=from_email, to=recipient_list)
+            message.attach_alternative(html_message, "text/html")
             message.content_subtype = 'html'
             message.send()
 

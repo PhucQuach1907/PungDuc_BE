@@ -1,5 +1,10 @@
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+
+from PungDuc_BE.settings import env
+from accounts.helpers import CustomTokenGenerator
 
 
 class CustomPasswordResetForm(PasswordResetForm):
@@ -13,8 +18,17 @@ class CustomPasswordResetForm(PasswordResetForm):
         html_email_template_name = 'registration/password_reset_email.html'
         subject_template_name = 'registration/password_reset_subject.txt'
 
-        if not token_generator:
-            token_generator = default_token_generator
+        custom_token_generator = CustomTokenGenerator()
+        token_generator = custom_token_generator
+
+        print(token_generator)
+
+        frontend_reset_url = env('FRONTEND_RESET_PASSWORD_URL')
+
+        if extra_email_context is None:
+            extra_email_context = {}
+
+        extra_email_context['frontend_reset_url'] = frontend_reset_url
 
         super().save(
             domain_override=domain_override,

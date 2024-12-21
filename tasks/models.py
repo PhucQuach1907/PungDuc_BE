@@ -1,5 +1,8 @@
 import uuid
 from django.db import models
+from django.db.models import ExpressionWrapper, F, DurationField, Case, Value, When, IntegerField, Func
+from django.utils import timezone
+
 from accounts.models import CustomUser
 
 
@@ -71,4 +74,28 @@ class Task(models.Model):
 
     class Meta:
         db_table = 'tasks'
-        ordering = ['-deadline', '-priority', 'title']
+
+    @staticmethod
+    def order_by_status_and_time():
+        return Task.objects.annotate(
+            remaining_time=Func(
+                F('deadline'),
+                function='AGE',
+                output_field=DurationField()
+            )
+        ).order_by(
+            Case(
+                When(status=Task.OVERDUE, then=Value(0)),
+                default=Value(1),
+                output_field=IntegerField()
+            ),
+            Case(
+                When(status=Task.DOING, then=F('remaining_time')),
+                default=Value(None),
+                output_field=DurationField()
+            ),
+            '-priority',
+            'column__order'
+        )
+
+

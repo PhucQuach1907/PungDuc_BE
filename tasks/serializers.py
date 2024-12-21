@@ -15,7 +15,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 class GetTableColumnSerializer(serializers.ModelSerializer):
     class Meta:
         model = TableColumn
-        fields = ['id', 'name', 'order', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'order', 'is_done_column', 'created_at', 'updated_at']
 
 
 class CreateUpdateDeleteTableColumnSerializer(serializers.ModelSerializer):
@@ -47,11 +47,15 @@ class GetDetailTasksSerializer(serializers.ModelSerializer):
 
 class GetAllTaskSerializer(serializers.ModelSerializer):
     project = serializers.PrimaryKeyRelatedField(queryset=Project.objects.all())
+    project_name = serializers.SerializerMethodField()
     column = serializers.PrimaryKeyRelatedField(queryset=TableColumn.objects.all())
 
     class Meta:
         model = Task
         fields = '__all__'
+
+    def get_project_name(self, obj):
+        return obj.project.name if obj.project else None
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -64,6 +68,5 @@ class TaskSerializer(serializers.ModelSerializer):
         
     def update(self, instance, validated_data):
         validated_data.pop('project', None)
-        validated_data.pop('column', None)
         
         return super().update(instance, validated_data)

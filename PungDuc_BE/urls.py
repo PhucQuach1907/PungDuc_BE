@@ -20,7 +20,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from accounts.views import CustomRegisterView, CustomResetPasswordView
+from accounts.views import CustomRegisterView, CustomResetPasswordView, CustomPasswordResetConfirmView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,7 +32,7 @@ urlpatterns = [
     path('api/auth/registration/verify-email/', EmailVerificationSentView.as_view()),
     path('api/auth/password/reset/', CustomResetPasswordView.as_view(), name='password_reset'),
     path('api/auth/password/reset/confirm/<slug:uidb64>/<slug:token>/',
-         PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+         CustomPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('api/auth/password/change/', PasswordChangeView.as_view(), name='password_change'),
     path('api/auth/social/', include('accounts.urls')),
     path('api/users/', UserDetailsView.as_view(), name='user_details'),

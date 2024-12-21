@@ -11,12 +11,16 @@ RUN apt-get update \
 # Tạo thư mục cho ứng dụng Django
 WORKDIR /app
 
+# Copy mã nguồn ứng dụng vào container (bao gồm manage.py)
+COPY . /app/
+
 # Cài đặt các dependencies từ tệp requirements.txt
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy mã nguồn ứng dụng vào container
-COPY . /app/
+# Thực thi lệnh makemigrations và migrate sau khi mã nguồn đã được sao chép vào container
+RUN python manage.py makemigrations
+RUN python manage.py migrate
 
 # Cấu hình các biến môi trường
 ENV PYTHONUNBUFFERED 1

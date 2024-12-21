@@ -148,16 +148,34 @@ class CreateManyTableColumnView(generics.CreateAPIView):
 
         if isinstance(columns_data, list):
             data = []
+            errors = []
+            is_valid = True
+
             serializers = [self.get_serializer(data=column_data) for column_data in columns_data]
-            for serializer in serializers:
-                serializer.is_valid(raise_exception=True)
+            for index, serializer in enumerate(serializers):
+                if not serializer.is_valid():
+                    is_valid = False
+                    errors.append({
+                        "index": index,
+                        "errors": serializer.errors
+                    })
+
+            if not is_valid:
+                return APIResponse(
+                    data={"errors": errors},
+                    status_code=status.HTTP_400_BAD_REQUEST
+                )
+
             for serializer in serializers:
                 self.perform_create(serializer)
                 data.append(serializer.data)
 
-            return APIResponse(data)
+            return APIResponse(data=data, status_code=status.HTTP_201_CREATED)
         else:
-            return APIResponse(status_code=status.HTTP_400_BAD_REQUEST)
+            return APIResponse(
+                data={"errors": "Request data must be a list of columns."},
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class TableColumnDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -191,7 +209,7 @@ class TableColumnDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class TaskListView(generics.ListAPIView):
-    model = Task.objects.all()
+    model = Task.order_by_status_and_time()
     serializer_class = GetTaskSerializer
     pagination_class = Pagination
 
@@ -209,7 +227,8 @@ class TaskListView(generics.ListAPIView):
 
         columns = TableColumn.objects.filter(project=project).order_by('order')
 
-        tasks = Task.objects.filter(project=project).order_by('column__order')
+        tasks = Task.order_by_status_and_time()
+        tasks = tasks.filter(project=project)
 
         tasks_grouped_by_column = defaultdict(list)
         for task in tasks:
@@ -224,6 +243,7 @@ class TaskListView(generics.ListAPIView):
                     'id': column.id,
                     'name': column.name,
                     'order': column.order,
+                    'is_done_column': column.is_done_column,
                 },
                 'tasks': task_serializer.data
             })
@@ -253,7 +273,7 @@ class TaskListView(generics.ListAPIView):
 
 
 class AllTaskListView(generics.ListAPIView):
-    model = Task.objects.all()
+    model = Task.order_by_status_and_time()
     serializer_class = GetAllTaskSerializer
     pagination_class = Pagination
 
@@ -297,7 +317,7 @@ class AllTaskListView(generics.ListAPIView):
 
 
 class OverdueTasksListView(generics.ListAPIView):
-    model = Task.objects.all()
+    model = Task.order_by_status_and_time()
     serializer_class = GetAllTaskSerializer
     pagination_class = Pagination
 
@@ -347,7 +367,7 @@ class OverdueTasksListView(generics.ListAPIView):
 
 
 class OnDeadlineTasksListView(generics.ListAPIView):
-    model = Task.objects.all()
+    model = Task.order_by_status_and_time()
     serializer_class = GetAllTaskSerializer
     pagination_class = Pagination
 
@@ -426,12 +446,22 @@ class TasksByMonthView(APIView):
             start_of_day = current_date.replace(hour=0, minute=0, second=0, microsecond=0)
             end_of_day = current_date.replace(hour=23, minute=59, second=59, microsecond=999999)
 
-            doing_count = Task.objects.filter(deadline__gte=start_of_day, status=1, project__user=self.request.user,
-                                              created_at__lte=end_of_day).count()
-            on_deadline_count = Task.objects.filter(deadline__range=[start_of_day, end_of_day],
-                                                    project__user=self.request.user).count()
-            overdue_count = Task.objects.filter(deadline__lt=start_of_day, status=3,
-                                                project__user=self.request.user).count()
+            doing_count = (Task.objects.filter(
+                deadline__gte=start_of_day,
+                status=1,
+                project__user=self.request.user,
+                created_at__lte=end_of_day)
+                           .count())
+            on_deadline_count = (Task.objects.filter(
+                deadline__range=[start_of_day, end_of_day],
+                status=1,
+                project__user=self.request.user)
+                                 .count())
+            overdue_count = (Task.objects.filter(
+                deadline__lt=start_of_day,
+                status=3,
+                project__user=self.request.user)
+                             .count())
 
             tasks_by_day[current_date.strftime('%Y-%m-%d')] = {
                 'doing': doing_count,
@@ -445,7 +475,7 @@ class TasksByMonthView(APIView):
 
 
 class TasksByDateView(generics.ListAPIView):
-    queryset = Task.objects.all()
+    queryset = Task.order_by_status_and_time()
     serializer_class = GetDetailTasksSerializer
 
     def list(self, request, *args, **kwargs):
@@ -505,11 +535,10 @@ class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
                 column = TableColumn.objects.get(id=column_id)
 
                 if column.is_done_column:
-                    instance.status = Task.DONE
-                    instance.finished_at = timezone.make_aware(instance.finished_at, timezone.get_default_timezone())
+                    if not instance.finish_at:
+                        instance.finish_at = timezone.now()
                 else:
-                    instance.status = Task.DOING
-                    instance.finished_at = None
+                    instance.finish_at = None
             except TableColumn.DoesNotExist:
                 return APIResponse({'error': 'COLUMN_NOT_FOUND'}, status_code=HTTPStatus.NOT_FOUND)
 

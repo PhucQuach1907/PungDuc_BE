@@ -131,9 +131,6 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
@@ -161,14 +158,10 @@ ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1
 ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = env("LOGIN_URL")
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 24
+PASSWORD_RESET_CONFIRM_REDIRECT_BASE_URL = env("FRONTEND_RESET_PASSWORD_URL")
 LOGIN_URL = env("LOGIN_URL")
 LOGOUT_REDIRECT_URL = env("LOGIN_URL")
-# EMAIL_CONFIRM_REDIRECT_BASE_URL = \
-#     "http://localhost:3000/email/confirm/"
-#
-# # <PASSWORD_RESET_CONFIRM_REDIRECT_BASE_URL>/<uidb64>/<token>/
-# PASSWORD_RESET_CONFIRM_REDIRECT_BASE_URL = \
-#     "http://localhost:3000/password-reset/confirm/"
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -257,21 +250,21 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 CELERY_BEAT_SCHEDULE = {
     'send_deadline_notifications_every_hour': {
         'task': 'notifications.tasks.send_deadline_notifications',
-        'schedule': timedelta(hours=1),
+        'schedule': timedelta(minutes=1),
     },
     'send_notifications_overdue_tasks': {
         'task': 'notifications.tasks.send_notification_overdue_tasks',
-        'schedule': timedelta(hours=1),
+        'schedule': timedelta(minutes=1),
     },
     'create_weekly_report': {
         'task': 'reports.tasks.create_weekly_report',
-        # 'schedule': crontab(minute='0', hour='0', day_of_week='1'),
-        'schedule': timedelta(seconds=10),
+        'schedule': crontab(minute='0', hour='0', day_of_week='1'),
+        # 'schedule': timedelta(seconds=10),
     },
     'create_monthly_report': {
         'task': 'reports.tasks.create_monthly_report',
-        # 'schedule': crontab(minute='0', hour='0', day_of_month='1'),
-        'schedule': timedelta(seconds=10),
+        'schedule': crontab(minute='0', hour='0', day_of_month='1'),
+        # 'schedule': timedelta(seconds=10),
     },
 }
 # Internationalization
