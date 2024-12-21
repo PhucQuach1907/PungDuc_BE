@@ -6,7 +6,7 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    settings_module = "PungDuc_BE.deployment" if "WEBSITE_HOSTNAME" in os.environ else "PungDuc_BE.settings"
+    settings_module = "PungDuc_BE.deployment" if "HOSTNAME" in os.environ else "PungDuc_BE.settings"
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings_module)
     try:
         from django.core.management import execute_from_command_line
