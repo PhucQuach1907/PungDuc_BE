@@ -196,3 +196,43 @@ class GithubLogin(SocialLoginView):
     adapter_class = GitHubOAuth2Adapter
     callback_url = env("CALL_BACK_URL")
     client_class = OAuth2Client
+
+
+class GitHubOAuthProxyView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        code = request.data.get('code')
+        redirect_uri = request.data.get('redirect_uri')
+
+        if not code or not redirect_uri:
+            return Response(
+                {"error": "Missing 'code' or 'redirect_uri' in the request."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        payload = {
+            'client_id': env("GITHUB_CLIENT_ID"),
+            'client_secret': env("GITHUB_CLIENT_SECRET"),
+            'code': code,
+            'redirect_uri': redirect_uri,
+        }
+        headers = {'Accept': 'application/json'}
+
+        try:
+            response = requests.post(
+                'https://github.com/login/oauth/access_token', data=payload, headers=headers
+            )
+
+            if response.status_code == 200:
+                return Response(response.json(), status=status.HTTP_200_OK)
+            else:
+                return Response(
+                    {"error": "Failed to fetch GitHub access token", "details": response.json()},
+                    status=response.status_code
+                )
+        except requests.RequestException as e:
+            return Response(
+                {"error": f"An unexpected error occurred: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
